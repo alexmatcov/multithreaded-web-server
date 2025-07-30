@@ -29,6 +29,14 @@ fn handle_connection(mut stream: TcpStream) {
         .take_while(|line| !line.is_empty())
         .collect();
         
-    println!("Request: {http_request:#?}");
+    let status_line = "HTTP/1.1 200 OK";
+    let contents = fs::read_to_string("hello.html").unwrap();
+    let length = contents.len();
+
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+    // as_bytes() converts the string data to bytes.
+    // write_all() takes a &[u8] and sens the bytes directly down the connection
+    stream.write_all(response.as_bytes()).unwrap();
 
 }
