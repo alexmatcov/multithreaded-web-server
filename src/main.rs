@@ -16,7 +16,7 @@ fn main() {
 
 
     // incoming() is an iterator over connection attempts
-    for stream in listener.incoming() {
+    for stream in listener.incoming().take(2) {
         // unwrap() terminates the program if the stream has errors
         let stream = stream.unwrap();
 
@@ -25,6 +25,8 @@ fn main() {
             handle_connection(stream);
         });
     }
+
+    println!("Shutting down.");
 }
 
 fn handle_connection(mut stream: TcpStream) {
