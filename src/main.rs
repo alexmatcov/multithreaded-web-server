@@ -6,17 +6,24 @@ use std::{
     thread,
     time::Duration,
 };
+use hello::ThreadPool;
+
 
 fn main() {
     // bind() is creating a new instance 
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+    let pool = ThreadPool::new(4);
+
 
     // incoming() is an iterator over connection attempts
     for stream in listener.incoming() {
         // unwrap() terminates the program if the stream has errors
         let stream = stream.unwrap();
 
-        handle_connection(stream)
+        // takes the closure and gives it a thread in the pool to run
+        pool.execute(|| {
+            handle_connection(stream);
+        });
     }
 }
 
